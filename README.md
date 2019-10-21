@@ -29,15 +29,25 @@ Summary
 - [Chloroform_HeliumLightRenderer api](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer.md) (generated with [DocTools](https://github.com/lingtalfi/DocTools))
 - Pages
     - [Chloroform helium light renderer example](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/pages/chloroform-helium-light-renderer-example.md)
+- [Related](#related)
 
 
 
+
+Related
+=========
+
+- [Chloroform HeliumRenderer](https://github.com/lingtalfi/Chloroform_HeliumRenderer/)
 
 
 
 History Log
 =============
 
+- 1.0.1 -- 2019-10-21
+
+    - add related section in README.md
+    
 - 1.0.0 -- 2019-10-21
 
     - initial commit
