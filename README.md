@@ -37,6 +37,8 @@ Summary
 Related
 =========
 
+- [Chloroform](https://github.com/lingtalfi/Chloroform), the library to create the form structure
+- [Chloroform Hydrogen renderer](https://github.com/lingtalfi/Chloroform_HydrogenRenderer), another renderer for chloroform
 - [Chloroform HeliumRenderer](https://github.com/lingtalfi/Chloroform_HeliumRenderer/)
 
 
@@ -44,6 +46,10 @@ Related
 History Log
 =============
 
+- 1.0.2 -- 2019-10-24
+
+    - add link in README.md
+    
 - 1.0.1 -- 2019-10-21
 
     - add related section in README.md
