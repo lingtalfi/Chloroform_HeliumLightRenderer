@@ -46,6 +46,10 @@ Related
 History Log
 =============
 
+- 1.1.0 -- 2019-11-18
+
+    - add HeliumLightRenderer->printTableListField
+    
 - 1.0.2 -- 2019-10-24
 
     - add link in README.md

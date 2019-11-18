@@ -4,7 +4,7 @@
 
 The HeliumLightRenderer class
 ================
-2019-10-21 --> 2019-10-24
+2019-10-21 --> 2019-11-18
 
 
 
@@ -40,6 +40,7 @@ class <span class="pl-k">HeliumLightRenderer</span> extends [HeliumRenderer](htt
     - public [render](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/render.md)(array $chloroform) : string
     - public [printField](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printField.md)(array $field) : void
     - protected [printAjaxFileBoxField](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printAjaxFileBoxField.md)(array $field) : void
+    - protected [printTableListField](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printTableListField.md)(array $field) : void
 
 - Inherited methods
     - public HeliumRenderer::prepare(array $chloroform) : void
@@ -150,6 +151,7 @@ Methods
 - [HeliumLightRenderer::render](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/render.md) &ndash; Returns the html version of the passed chloroform array.
 - [HeliumLightRenderer::printField](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printField.md) &ndash; Prints the given field.
 - [HeliumLightRenderer::printAjaxFileBoxField](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printAjaxFileBoxField.md) &ndash; Prints an ajax file box field.
+- [HeliumLightRenderer::printTableListField](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printTableListField.md) &ndash; Prints a table list file box field.
 - HeliumRenderer::prepare &ndash; Stores the chloroform array in memory.
 - HeliumRenderer::printFormContent &ndash; form tag itself.
 - HeliumRenderer::printFormTagOpening &ndash; Prints the opening form tag.

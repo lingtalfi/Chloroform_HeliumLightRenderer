@@ -8,6 +8,8 @@ use Ling\Chloroform_HeliumRenderer\HeliumRenderer;
 use Ling\HtmlPageTools\Copilot\HtmlPageCopilot;
 use Ling\Light\ServiceContainer\LightServiceContainerInterface;
 use Ling\Light_AjaxFileUploadManager\Util\LightAjaxFileUploadManagerRenderingUtil;
+use Ling\Light_AjaxHandler\Service\LightAjaxHandlerService;
+use Ling\Light_CsrfSimple\Service\LightCsrfSimpleService;
 
 /**
  * The HeliumLightRenderer class.
@@ -73,6 +75,9 @@ class HeliumLightRenderer extends HeliumRenderer
             case "Ling\Chloroform\Field\AjaxFileBoxField":
                 $this->printAjaxFileBoxField($field);
                 break;
+            case "Ling\Light_ChloroformExtension\Field\TableListField":
+                $this->printTableListField($field);
+                break;
             default:
                 return parent::printField($field);
                 break;
@@ -84,7 +89,7 @@ class HeliumLightRenderer extends HeliumRenderer
      *
      * Prints an ajax file box field.
      *
-     * See the @page(Chloroform toArray) method for more info about the fields structure.
+     * See the @page(Chloroform toArray) method for more info about the field structure.
      *
      * @param array $field
      * @throws \Exception
@@ -167,5 +172,208 @@ class HeliumLightRenderer extends HeliumRenderer
         <?php
 
 
+    }
+
+    /**
+     *
+     * Prints a table list file box field.
+     *
+     * See the @page(Chloroform toArray) method and the @page(TableListField conception notes) for more info about
+     * the field structure.
+     *
+     * @param array $field
+     * @throws \Exception
+     */
+    protected function printTableListField(array $field)
+    {
+        /**
+         * @var $service LightAjaxHandlerService
+         */
+        $service = $this->container->get("ajax_handler");
+        $baseUrl = $service->getServiceUrl();
+        $useAutoComplete = $field['useAutoComplete'] ?? false;
+
+
+        if (false === $useAutoComplete) {
+            $this->printSelectField($field);
+        } else {
+
+            $tableListIdentifier = $field['tableListIdentifier'];
+            /**
+             * @var $csrfSimple LightCsrfSimpleService
+             */
+            $csrfSimple = $this->container->get('csrf_simple');
+            $csrfToken = $csrfSimple->getToken();
+
+            /**
+             * Here I use two input texts.
+             * One of them is the regular input text, but I hide it.
+             * The other one is the auto-complete control, with which the user interacts.
+             * When the user selects an item, it updates the value of the hidden field.
+             *
+             * In terms of posted data, only the regular hidden input text value will be taken into account.
+             * The auto-complete control will use a fake/irrelevant name that should be ignored.
+             *
+             * Also, note that this tool expects the ajax-service to return an array of rows, each
+             * of which having the following structure:
+             *
+             * - label: the label
+             * - value: the value
+             *
+             *
+             */
+            $fieldAutoComplete = [
+                "label" => $field['label'],
+                "id" => $field['id'] . "_autocomplete_helper_",
+                "hint" => $field['hint'],
+                "errorName" => $field['errorName'],
+                "value" => '',
+                "htmlName" => '_autocomplete_helper_',
+                "errors" => [],
+                "className" => 'Ling\Chloroform\Field\StringField',
+                // add an icon
+                'icon' => 'fas fa-search',
+                'icon' => 'far fa-list-alt',
+                'icon_position' => 'pre',
+            ];
+            $field['className'] = 'Ling\Chloroform\Field\HiddenField';
+//            $field['className'] = 'Ling\Chloroform\Field\StringField';
+            $field['label'] = '(real field)';
+
+
+            /**
+             * @var $copilot HtmlPageCopilot
+             */
+            $copilot = $this->container->get('html_page_copilot');
+            $copilot->registerLibrary("bootstrapAutocomplete", [
+                '/libs/universe/Ling/JBootstrapAutocomplete/bootstrap-typeahead.js',
+//                '/libs/universe/Ling/JBootstrapAutocomplete/bloodhound.js',
+            ], [
+                '/libs/universe/Ling/JBootstrapAutocomplete/style.css',
+            ]);
+
+            $fieldId = $field['id'];
+            $fieldAutoCompleteId = $fieldAutoComplete['id'];
+
+            $this->printStringField($fieldAutoComplete);
+            $this->printHiddenField($field);
+
+
+            ?>
+            <!--
+            https://github.com/bassjobsen/Bootstrap-3-Typeahead/pull/125#issuecomment-115151206
+             -->
+            <style type="text/css">
+                ul.typeahead {
+                    height: auto;
+                    max-height: 300px;
+                    overflow-x: hidden;
+                }
+            </style>
+            <script>
+
+
+                window.Chloroform_HeliumLightRenderer_TableList_ErrorHandler = function (errData) {
+                    console.log(errData);
+                    throw new Error("An error occurred. Static call: HeliumLightRenderer->printTableListField, check the console.");
+                };
+
+                document.addEventListener("DOMContentLoaded", function (event) {
+                    $(document).ready(function () {
+
+
+                        var defaultValue = '<?php echo $field['value']; ?>';
+
+                        var errorFunc = function (errData) {
+                            window.Chloroform_HeliumLightRenderer_TableList_ErrorHandler(errData);
+                        };
+
+                        var jField = $('#<?php echo $fieldId; ?>');
+                        var cache = {};
+
+                        var jAutocompleteControl = $("#<?php echo $fieldAutoCompleteId; ?>");
+
+                        /**
+                         * Doc links:
+                         * https://github.com/bassjobsen/Bootstrap-3-Typeahead
+                         * http://twitter.github.io/typeahead.js/examples/
+                         * https://github.com/twitter/typeahead.js/blob/master/doc/jquery_typeahead.md
+                         *
+                         */
+                        var oTypeAhead = jAutocompleteControl.typeahead({
+
+                            // data source
+                            source: function (query, process) {
+                                if (query in cache) {
+                                    process(cache[query]);
+                                } else {
+                                    $.ajax({
+                                        url: '<?php echo $baseUrl; ?>',
+                                        type: 'POST',
+                                        data: {
+                                            ajax_handler_id: 'Light_ChloroformExtension',
+                                            ajax_action_id: 'table_list.autocomplete',
+                                            tableListIdentifier: '<?php echo $tableListIdentifier; ?>',
+                                            csrf_token: '<?php echo $csrfToken; ?>',
+                                        },
+                                        dataType: 'JSON',
+                                        success: function (data) {
+                                            if ('success' === data.type) {
+                                                cache[query] = data.rows;
+                                                process(data.rows);
+                                            } else {
+                                                errorFunc(data);
+                                            }
+                                        }
+                                    });
+                                }
+                            },
+
+                            // how many items to show
+                            items: 'all',
+
+                            // default template
+                            menu: '<ul class="typeahead dropdown-menu" role="listbox"></ul>',
+                            item: '<li><a class="dropdown-item" href="#" role="option"></a></li>',
+                            headerHtml: '<li class="dropdown-header"></li>',
+                            headerDivider: '<li class="divider" role="separator"></li>',
+                            itemContentSelector: 'a',
+                            displayText: function (item) {
+                                return item.label;
+                            },
+
+                            // min length to trigger the suggestion list
+                            minLength: 0,
+
+                            // number of pixels the scrollable parent container scrolled down
+                            scrollHeight: 0,
+
+                            // auto selects the first item
+                            autoSelect: true,
+
+                            // callbacks
+                            afterSelect: function (item) {
+                                jField.val(item.value);
+                            },
+                            afterEmptySelect: $.noop,
+
+                            // adds an item to the end of the list
+                            addItem: false,
+
+                            // delay between lookups
+                            delay: 0,
+
+                        }).data('typeahead');
+
+
+                        oTypeAhead.setDefault(defaultValue);
+
+
+                    });
+                });
+            </script>
+            <?php
+
+        }
     }
 }

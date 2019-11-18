@@ -5,6 +5,8 @@ dependencies:
         - HtmlPageTools
         - Light
         - Light_AjaxFileUploadManager
+        - Light_AjaxHandler
+        - Light_CsrfSimple
     
 
 post_install: []
