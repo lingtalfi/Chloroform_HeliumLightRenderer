@@ -227,7 +227,7 @@ class HeliumLightRenderer extends HeliumRenderer
                 "id" => $field['id'] . "_autocomplete_helper_",
                 "hint" => $field['hint'],
                 "errorName" => $field['errorName'],
-                "value" => '',
+                "value" => $field['autoCompleteLabel'] ?? '',
                 "htmlName" => '_autocomplete_helper_',
                 "errors" => [],
                 "className" => 'Ling\Chloroform\Field\StringField',
@@ -300,7 +300,7 @@ class HeliumLightRenderer extends HeliumRenderer
                          * https://github.com/twitter/typeahead.js/blob/master/doc/jquery_typeahead.md
                          *
                          */
-                        var oTypeAhead = jAutocompleteControl.typeahead({
+                        jAutocompleteControl.typeahead({
 
                             // data source
                             source: function (query, process) {
@@ -353,7 +353,9 @@ class HeliumLightRenderer extends HeliumRenderer
 
                             // callbacks
                             afterSelect: function (item) {
-                                jField.val(item.value);
+                                if ($.isPlainObject(item)) {
+                                    jField.val(item.value);
+                                }
                             },
                             afterEmptySelect: $.noop,
 
@@ -363,10 +365,9 @@ class HeliumLightRenderer extends HeliumRenderer
                             // delay between lookups
                             delay: 0,
 
-                        }).data('typeahead');
+                        });
 
 
-                        oTypeAhead.setDefault(defaultValue);
 
 
                     });

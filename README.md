@@ -46,6 +46,10 @@ Related
 History Log
 =============
 
+- 1.2.0 -- 2019-11-19
+
+    - update HeliumLightRenderer->printTableListField to handle new TableListField conception
+    
 - 1.1.0 -- 2019-11-18
 
     - add HeliumLightRenderer->printTableListField
