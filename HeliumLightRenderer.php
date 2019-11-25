@@ -97,16 +97,6 @@ class HeliumLightRenderer extends HeliumRenderer
     protected function printAjaxFileBoxField(array $field)
     {
 
-        /**
-         * @var $copilot HtmlPageCopilot
-         */
-        $copilot = $this->container->get('html_page_copilot');
-        $copilot->registerLibrary("jsFileUploader", [
-            '/plugins/Light_Kit_Admin/fileuploader/fileuploader.js',
-        ], [
-            '/plugins/Light_Kit_Admin/fileuploader/fileuploader.css',
-        ]);
-
 
         $suffix = CaseTool::toDash($field['id']);
         $sizeClass = $options['sizeClass'] ?? "w100";
@@ -122,6 +112,7 @@ class HeliumLightRenderer extends HeliumRenderer
         }
 
         $uploaderUtil = new LightAjaxFileUploadManagerRenderingUtil();
+        $uploaderUtil->setContainer($this->container);
         $uploaderUtil->setSuffix($suffix);
 
 
@@ -366,8 +357,6 @@ class HeliumLightRenderer extends HeliumRenderer
                             delay: 0,
 
                         });
-
-
 
 
                     });

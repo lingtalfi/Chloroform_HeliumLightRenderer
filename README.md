@@ -46,6 +46,10 @@ Related
 History Log
 =============
 
+- 1.2.1 -- 2019-11-25
+
+    - fix HeliumLightRenderer->printAjaxFileBoxField having dependencies to Light_Kit_Admin web assets
+    
 - 1.2.0 -- 2019-11-19
 
     - update HeliumLightRenderer->printTableListField to handle new TableListField conception
