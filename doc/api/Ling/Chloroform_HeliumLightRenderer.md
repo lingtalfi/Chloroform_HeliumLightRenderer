@@ -1,6 +1,6 @@
 Ling/Chloroform_HeliumLightRenderer
 ================
-2019-10-21 --> 2019-11-25
+2019-10-21 --> 2019-11-27
 
 
 
@@ -45,6 +45,6 @@ Dependencies
 - [Light](https://github.com/lingtalfi/Light)
 - [Light_AjaxFileUploadManager](https://github.com/lingtalfi/Light_AjaxFileUploadManager)
 - [Light_AjaxHandler](https://github.com/lingtalfi/Light_AjaxHandler)
-- [Light_CsrfSimple](https://github.com/lingtalfi/Light_CsrfSimple)
+- [Light_CsrfSession](https://github.com/lingtalfi/Light_CsrfSession)
 
 

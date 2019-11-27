@@ -6,7 +6,7 @@ dependencies:
         - Light
         - Light_AjaxFileUploadManager
         - Light_AjaxHandler
-        - Light_CsrfSimple
+        - Light_CsrfSession
     
 
 post_install: []

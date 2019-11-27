@@ -9,7 +9,7 @@ use Ling\HtmlPageTools\Copilot\HtmlPageCopilot;
 use Ling\Light\ServiceContainer\LightServiceContainerInterface;
 use Ling\Light_AjaxFileUploadManager\Util\LightAjaxFileUploadManagerRenderingUtil;
 use Ling\Light_AjaxHandler\Service\LightAjaxHandlerService;
-use Ling\Light_CsrfSimple\Service\LightCsrfSimpleService;
+use Ling\Light_CsrfSession\Service\LightCsrfSessionService;
 
 /**
  * The HeliumLightRenderer class.
@@ -191,10 +191,10 @@ class HeliumLightRenderer extends HeliumRenderer
 
             $tableListIdentifier = $field['tableListIdentifier'];
             /**
-             * @var $csrfSimple LightCsrfSimpleService
+             * @var $csrfService LightCsrfSessionService
              */
-            $csrfSimple = $this->container->get('csrf_simple');
-            $csrfToken = $csrfSimple->getToken();
+            $csrfService = $this->container->get('csrf_session');
+            $csrfToken = $csrfService->getToken();
 
             /**
              * Here I use two input texts.

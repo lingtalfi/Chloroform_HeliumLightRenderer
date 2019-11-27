@@ -46,6 +46,10 @@ Related
 History Log
 =============
 
+- 1.3.0 -- 2019-11-27
+
+    - use of csrf_session service replaces csrf_simple
+    
 - 1.2.1 -- 2019-11-25
 
     - fix HeliumLightRenderer->printAjaxFileBoxField having dependencies to Light_Kit_Admin web assets
