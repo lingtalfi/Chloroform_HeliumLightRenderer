@@ -4,6 +4,7 @@
 namespace Ling\Chloroform_HeliumLightRenderer;
 
 use Ling\Bat\CaseTool;
+use Ling\Bat\StringTool;
 use Ling\Chloroform_HeliumRenderer\HeliumRenderer;
 use Ling\HtmlPageTools\Copilot\HtmlPageCopilot;
 use Ling\Light\ServiceContainer\LightServiceContainerInterface;
@@ -177,6 +178,7 @@ class HeliumLightRenderer extends HeliumRenderer
      */
     protected function printTableListField(array $field)
     {
+
         /**
          * @var $service LightAjaxHandlerService
          */
@@ -189,6 +191,10 @@ class HeliumLightRenderer extends HeliumRenderer
             $this->printSelectField($field);
         } else {
 
+            $formMode = $this->_chloroform['mode'];
+
+            $mode = $field['mode'] ?? 'default';
+            $isMultiplier = ('multiplier' === $mode);
             $tableListIdentifier = $field['tableListIdentifier'];
             /**
              * @var $csrfService LightCsrfSessionService
@@ -227,6 +233,14 @@ class HeliumLightRenderer extends HeliumRenderer
                 'icon' => 'far fa-list-alt',
                 'icon_position' => 'pre',
             ];
+
+            $addBindingButtonId = '';
+            if ($isMultiplier && 'insert' === $formMode) {
+                $addBindingButtonId = StringTool::getUniqueCssId("tm-add-binding-btn-");
+                $fieldAutoComplete['button'] = '<button id="' . htmlspecialchars($addBindingButtonId) . '" class="add-binding-btn btn btn-outline-primary btn-sm"><i class="fas fa-plus"></i></button>';
+                $fieldAutoComplete['button_position'] = 'post';
+            }
+
             $field['className'] = 'Ling\Chloroform\Field\HiddenField';
 //            $field['className'] = 'Ling\Chloroform\Field\StringField';
             $field['label'] = '(real field)';
@@ -242,25 +256,69 @@ class HeliumLightRenderer extends HeliumRenderer
             ], [
                 '/libs/universe/Ling/JBootstrapAutocomplete/style.css',
             ]);
+            if (true === $isMultiplier) {
+                $copilot->registerLibrary("tableList", [
+                    '/libs/universe/Ling/Chloroform_HeliumLightRenderer/tablelist/tablelist-multiplier-helper.js',
+                ], [
+                    '/libs/universe/Ling/Chloroform_HeliumLightRenderer/tablelist/tablelist-multiplier.css',
+                ]);
 
+//                $copilot->registerLibrary("sortableJs", [
+//                    /**
+//                     * http://sortablejs.github.io/Sortable/
+//                     */
+//                    'https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js',
+//                    'https://cdn.jsdelivr.net/npm/jquery-sortablejs@latest/jquery-sortable.js',
+//                ]);
+                $itemInputName = $field['htmlName'];
+                if ('[]' !== substr($itemInputName, -2)) {
+                    $itemInputName .= '[]';
+                }
+            }
+
+
+            $fieldAutoComplete['errors'] = $field['errors'];
             $fieldId = $field['id'];
             $fieldAutoCompleteId = $fieldAutoComplete['id'];
 
             $this->printStringField($fieldAutoComplete);
             $this->printHiddenField($field);
-
+            $tableMultiplierItemsId = StringTool::getUniqueCssId("table-multiplier-items-")
 
             ?>
+
             <!--
-            https://github.com/bassjobsen/Bootstrap-3-Typeahead/pull/125#issuecomment-115151206
-             -->
+https://github.com/bassjobsen/Bootstrap-3-Typeahead/pull/125#issuecomment-115151206
+ -->
             <style type="text/css">
                 ul.typeahead {
                     height: auto;
                     max-height: 300px;
                     overflow-x: hidden;
                 }
+
             </style>
+
+
+            <ul class="list-unstyled tablelist-multiplier-items"
+                id="<?php echo htmlspecialchars($tableMultiplierItemsId); ?>">
+                <?php if (false === "designPrototype"): ?>
+                    <?php for ($i = 1; $i <= 7; $i++): ?>
+
+                        <li>
+                            <div class="d-flex tablelist-multiplier-item">
+                                <span>1. Root</span>
+                                <input type="hidden" value="1"/>
+                                <div class="ml-auto">
+                                    <span class="drag-item-btn"><i class="fas fa-arrows-alt fa-2x"></i></span>
+                                    <span class="remove-item-btn"><i class="far fa-times-circle fa-2x"></i></span>
+                                </div>
+
+                            </div>
+                        </li>
+                    <?php endfor; ?>
+                <?php endif; ?>
+            </ul>
             <script>
 
 
@@ -270,18 +328,39 @@ class HeliumLightRenderer extends HeliumRenderer
                 };
 
                 document.addEventListener("DOMContentLoaded", function (event) {
+
+                    var $ = jQuery;
+
                     $(document).ready(function () {
 
 
-                        var defaultValue = '<?php echo $field['value']; ?>';
+                        var useMultiplier = <?php echo ('insert' === $formMode && true === $isMultiplier) ? 'true' : 'false'; ?>;
+
 
                         var errorFunc = function (errData) {
                             window.Chloroform_HeliumLightRenderer_TableList_ErrorHandler(errData);
                         };
 
+                        //----------------------------------------
+                        // MULTIPLIER
+                        //----------------------------------------
+                        if (true === useMultiplier) {
+                            var tableListMultiplierHelper = new TableListMultiplierHelper({
+                                itemInputName: '<?php echo $itemInputName; ?>',
+                                jAddBindingBtn: $('#<?php echo $addBindingButtonId; ?>'),
+                                jBindingLabelInput: $('#<?php echo $fieldAutoCompleteId; ?>'),
+                                jBindingInput: $('#<?php echo $fieldId; ?>'),
+                                jItemsContainer: $('#<?php echo $tableMultiplierItemsId; ?>'),
+                            });
+                            tableListMultiplierHelper.listen();
+                        }
+
+
+                        //----------------------------------------
+                        // AUTOCOMPLETE
+                        //----------------------------------------
                         var jField = $('#<?php echo $fieldId; ?>');
                         var cache = {};
-
                         var jAutocompleteControl = $("#<?php echo $fieldAutoCompleteId; ?>");
 
                         /**
@@ -306,6 +385,7 @@ class HeliumLightRenderer extends HeliumRenderer
                                             ajax_action_id: 'table_list.autocomplete',
                                             tableListIdentifier: '<?php echo $tableListIdentifier; ?>',
                                             csrf_token: '<?php echo $csrfToken; ?>',
+                                            q: query,
                                         },
                                         dataType: 'JSON',
                                         success: function (data) {
@@ -346,6 +426,12 @@ class HeliumLightRenderer extends HeliumRenderer
                             afterSelect: function (item) {
                                 if ($.isPlainObject(item)) {
                                     jField.val(item.value);
+                                    if (true === useMultiplier) {
+                                        var items = {};
+                                        items[item.value] = item.label;
+                                        tableListMultiplierHelper.addItems(items);
+                                    }
+
                                 }
                             },
                             afterEmptySelect: $.noop,

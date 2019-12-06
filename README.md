@@ -46,6 +46,10 @@ Related
 History Log
 =============
 
+- 1.4.0 -- 2019-12-06
+
+    - update HeliumLightRenderer->printTableListField to accommodate latest version of form multiplier trick
+    
 - 1.3.0 -- 2019-11-27
 
     - use of csrf_session service replaces csrf_simple
