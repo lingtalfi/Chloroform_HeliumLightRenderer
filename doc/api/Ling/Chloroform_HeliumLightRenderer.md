@@ -1,6 +1,6 @@
 Ling/Chloroform_HeliumLightRenderer
 ================
-2019-10-21 --> 2019-12-06
+2019-10-21 --> 2020-01-10
 
 
 
@@ -34,7 +34,9 @@ Table of contents
     - HeliumRenderer::printRadioField &ndash; Prints the given radio field.
     - HeliumRenderer::printFileField &ndash; Prints the given file field.
     - HeliumRenderer::printPasswordField &ndash; Prints the given password field.
+    - HeliumRenderer::printDecorativeField &ndash; Prints the given decorative field.
     - HeliumRenderer::printJsHandler &ndash; and some fields behaviours.
+    - HeliumRenderer::printCustomScripts &ndash; Prints some custom scripts if necessary.
 
 
 Dependencies

@@ -46,6 +46,10 @@ Related
 History Log
 =============
 
+- 1.4.1 -- 2020-01-10
+
+    - fix HeliumLightRenderer->printAjaxFileBoxFieldWithAjaxFileUploadManager not showing error messages because of the bootstrap class d-none 
+    
 - 1.4.0 -- 2019-12-06
 
     - update HeliumLightRenderer->printTableListField to accommodate latest version of form multiplier trick

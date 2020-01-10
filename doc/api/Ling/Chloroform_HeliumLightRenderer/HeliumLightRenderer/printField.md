@@ -56,7 +56,7 @@ Exceptions thrown
 
 Source Code
 ===========
-See the source code for method [HeliumLightRenderer::printField](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/HeliumLightRenderer.php#L71-L86)
+See the source code for method [HeliumLightRenderer::printField](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/HeliumLightRenderer.php#L73-L111)
 
 
 See Also
@@ -64,5 +64,5 @@ See Also
 
 The [HeliumLightRenderer](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer.md) class.
 
-Previous method: [render](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/render.md)<br>Next method: [printAjaxFileBoxField](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printAjaxFileBoxField.md)<br>
+Previous method: [render](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/render.md)<br>Next method: [printAjaxFileBoxFieldDeprecated](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printAjaxFileBoxFieldDeprecated.md)<br>
 

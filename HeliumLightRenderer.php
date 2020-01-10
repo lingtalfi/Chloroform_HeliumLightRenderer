@@ -56,13 +56,15 @@ class HeliumLightRenderer extends HeliumRenderer
          * @var $copilot HtmlPageCopilot
          */
         $copilot = $this->container->get('html_page_copilot');
-        $copilot->registerLibrary("chloroformHeliumRenderer", [
-            '/libs/universe/Ling/Chloroform_HeliumRenderer/helium.js',
+        $copilot->registerLibrary("Chloroform_HeliumRenderer", [
+            "/libs/universe/Ling/Chloroform_HeliumRenderer/helium.js",
         ], [
-            '/libs/universe/Ling/Chloroform_HeliumRenderer/helium.css',
+            "/libs/universe/Ling/Chloroform_HeliumRenderer/helium.css",
         ]);
         return parent::render($chloroform);
     }
+
+
 
 
     /**
@@ -74,7 +76,30 @@ class HeliumLightRenderer extends HeliumRenderer
         $className = $field['className'];
         switch ($className) {
             case "Ling\Chloroform\Field\AjaxFileBoxField":
-                $this->printAjaxFileBoxField($field);
+
+
+                // todo: First, implement lud_user_options and lud_permission options... maxStorage=20M per profile...
+                // todo: Remember to finish User_Data and 2svp replacement...
+                // todo: Then
+                // todo: here, do the new way: dont upload until the user presses the submit button...
+                // todo: (and then update all files at once, in series, with upload progress...)
+                // todo: here, do the new way: dont upload until the user presses the submit button...
+                // todo: also implement a on(prepareFields) listener, (triggered by fafh--fullAjaxFormFileHelper), so that we can trigger the
+                // todo: uploading process only when the submit button is pressed...
+                // todo:
+                // todo: So basically, on submit, we convert only the files which are uploaded/dragged by the user,
+                // todo: and have not yet an (hidden) input bound to them. In other words, we don't touch the existing files (which have
+                // todo: an input bound to them).
+                // todo: When the conversion from js files to hidden input is done, then we use formData to post the form via ajax...
+                // todo:
+                // todo: so the fafh should probably provide a prepare method, so that the ajax uploader js helper get a chance
+                // todo: to do the conversion before the values are appended to FormData.
+                // todo:
+                // todo:
+                // todo:
+
+//                $this->printAjaxFileBoxField($field);
+                $this->printAjaxFileBoxFieldWithAjaxFileUploadManager($field);
                 break;
             case "Ling\Light_ChloroformExtension\Field\TableListField":
                 $this->printTableListField($field);
@@ -95,8 +120,16 @@ class HeliumLightRenderer extends HeliumRenderer
      * @param array $field
      * @throws \Exception
      */
-    protected function printAjaxFileBoxField(array $field)
+    protected function printAjaxFileBoxFieldDeprecated(array $field)
     {
+
+        /**
+         * @var $copilot HtmlPageCopilot
+         */
+        $copilot = $this->container->get('html_page_copilot');
+        $copilot->registerLibrary("JFullAjaxForm", [
+            '/libs/universe/Ling/JFullAjaxForm/full-ajax-form-file-helper.js',
+        ]);
 
 
         $suffix = CaseTool::toDash($field['id']);
@@ -112,16 +145,29 @@ class HeliumLightRenderer extends HeliumRenderer
             $sClass = "helium-is-invalid";
         }
 
-        $uploaderUtil = new LightAjaxFileUploadManagerRenderingUtil();
-        $uploaderUtil->setContainer($this->container);
-        $uploaderUtil->setSuffix($suffix);
+
+        $fieldName = $field['id'];
+        $maxFile = $field["maxFile"];
+        $maxFile = 5;
+        if (null === $maxFile) {
+            $maxFile = -1;
+        }
+        $maxFileSize = $field["maxFileSize"];
+        if (null === $maxFileSize) {
+            $maxFileSize = -1;
+        }
+        $mimeType = $field["mimeType"];
+        $mimeType = json_encode($mimeType);
+        $postParams = json_encode($field['postParams']);
+        $fieldValue = json_encode($field['value']);
 
 
         ?>
+
         <div class="field form-group">
             <label for="id-fileuploader-input-<?php echo $suffix; ?>"><?php echo $field['label']; ?></label>
             <div class="custom-file">
-                <input type="file" class="custom-file-input" id="id-fileuploader-input-<?php echo $suffix; ?>"
+                <input type="file" name="avatar_url[]" class="custom-file-input" id="id-fileuploader-input-<?php echo $suffix; ?>"
                        value="<?php echo htmlspecialchars($field['value']); ?>"
                     <?php echo $sClass; ?>
                     <?php if (true === $hasHint): ?>
@@ -142,7 +188,8 @@ class HeliumLightRenderer extends HeliumRenderer
             <div id="id-fileuploader-filevisualizer-<?php echo $suffix; ?>"
                  class="file-uploader-filevisualizer <?php echo htmlspecialchars($sizeClass); ?>"></div>
 
-            <div id="id-fileuploader-error-<?php echo $suffix; ?>" class="alert alert-danger mt-2 d-none"
+            <div id="id-fileuploader-error-<?php echo $suffix; ?>" class="alert alert-danger mt-2"
+                 style="display: none"
                  role="alert">
                 <strong>Oops!</strong> The following errors occurred:
                 <ul>
@@ -156,7 +203,30 @@ class HeliumLightRenderer extends HeliumRenderer
         <script>
             document.addEventListener("DOMContentLoaded", function (event) {
                 $(document).ready(function () {
-                    <?php $uploaderUtil->printJavascript($field); ?>
+                    $('#id-fileuploader-input-<?php echo $suffix; ?>').fullAjaxFormFileHelper({
+                        defaultValue: <?php echo $fieldValue; ?>,
+                        useErrorContainer: true,
+                        useFileVisualizer: true,
+                        fileVisualizerContainer: $('#id-fileuploader-filevisualizer-<?php echo $suffix; ?>'),
+                        //
+                        maxFileSize: <?php echo $maxFileSize; ?>,
+                        mimeType: <?php echo $mimeType; ?>,
+
+                        //
+                        maxFile: <?php echo $maxFile; ?>,
+
+                        // deprecated
+                        useUrlToForm: false,
+                        urlToFormContainer: $('#id-fileuploader-urltoform-<?php echo $suffix; ?>'),
+                        urlToFormFieldName: "<?php echo $fieldName; ?>",
+                        //
+                        errorContainer: $("#id-fileuploader-error-<?php echo $suffix; ?>"),
+                        dropzone: $('#id-fileuploader-dropzone-<?php echo $suffix; ?>'),
+                        serverUrl: "/ajax_file_upload_manager",
+                        ajaxFormExtraFields: <?php echo $postParams; ?>,
+                        useProgressHandler: true,
+                        progressHandlerContainer: $('#id-fileuploader-progress-<?php echo $suffix; ?>')
+                    });
                 });
             });
         </script>
@@ -451,5 +521,93 @@ https://github.com/bassjobsen/Bootstrap-3-Typeahead/pull/125#issuecomment-115151
             <?php
 
         }
+    }
+
+
+    //--------------------------------------------
+    //
+    //--------------------------------------------
+
+    /**
+     *
+     * @param array $field
+     * @throws \Exception
+     * @deprecated in favor of printAjaxFileBoxField.
+     *
+     * Prints an ajax file box field.
+     *
+     * See the @page(Chloroform toArray) method for more info about the field structure.
+     *
+     */
+    private function printAjaxFileBoxFieldWithAjaxFileUploadManager(array $field)
+    {
+
+
+        $suffix = CaseTool::toDash($field['id']);
+        $sizeClass = $options['sizeClass'] ?? "w100";
+
+
+        $cssId = $this->getCssIdById($field['id']);
+        $style = $this->options['formStyle'];
+        $hasHint = ('' !== (string)$field['hint']);
+        $hintId = $cssId . '-help';
+        $sClass = "";
+        if ($field['errors']) {
+            $sClass = "helium-is-invalid";
+        }
+
+        $uploaderUtil = new LightAjaxFileUploadManagerRenderingUtil();
+        $uploaderUtil->setContainer($this->container);
+        $uploaderUtil->setSuffix($suffix);
+
+
+        ?>
+        <div class="field form-group">
+            <label for="id-fileuploader-input-<?php echo $suffix; ?>"><?php echo $field['label']; ?></label>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="id-fileuploader-input-<?php echo $suffix; ?>"
+                       value="<?php echo htmlspecialchars($field['value']); ?>"
+                    <?php echo $sClass; ?>
+                    <?php if (true === $hasHint): ?>
+                        aria-describedby="<?php echo $hintId; ?>"
+                    <?php endif; ?>
+                       multiple
+                >
+                <label class="custom-file-label"
+                       for="id-fileuploader-input-<?php echo $suffix; ?>">Choose file</label>
+
+
+            </div>
+            <div class="file-uploader-dropzone mt-2" id="id-fileuploader-dropzone-<?php echo $suffix; ?>">Or drop file
+            </div>
+
+            <div id="id-fileuploader-progress-<?php echo $suffix; ?>"></div>
+            <div id="id-fileuploader-urltoform-<?php echo $suffix; ?>"></div>
+            <div id="id-fileuploader-filevisualizer-<?php echo $suffix; ?>"
+                 class="file-uploader-filevisualizer <?php echo htmlspecialchars($sizeClass); ?>"></div>
+
+            <div id="id-fileuploader-error-<?php echo $suffix; ?>" class="alert alert-danger mt-2"
+                 style="display: none"
+                 role="alert">
+                <strong>Oops!</strong> The following errors occurred:
+                <ul>
+                </ul>
+            </div>
+
+            <?php $this->printErrorsAndHint($field); ?>
+        </div>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function (event) {
+                $(document).ready(function () {
+                    <?php $uploaderUtil->printJavascript($field); ?>
+                });
+            });
+        </script>
+
+        <?php
+
+
     }
 }
