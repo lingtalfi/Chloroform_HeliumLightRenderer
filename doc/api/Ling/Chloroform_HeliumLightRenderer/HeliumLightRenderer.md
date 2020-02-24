@@ -4,7 +4,7 @@
 
 The HeliumLightRenderer class
 ================
-2019-10-21 --> 2020-01-10
+2019-10-21 --> 2020-02-24
 
 
 
@@ -39,9 +39,8 @@ class <span class="pl-k">HeliumLightRenderer</span> extends [HeliumRenderer](htt
     - public [setContainer](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/setContainer.md)([Ling\Light\ServiceContainer\LightServiceContainerInterface](https://github.com/lingtalfi/Light/blob/master/doc/api/Ling/Light/ServiceContainer/LightServiceContainerInterface.md) $container) : void
     - public [render](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/render.md)(array $chloroform) : string
     - public [printField](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printField.md)(array $field) : void
-    - protected [printAjaxFileBoxFieldDeprecated](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printAjaxFileBoxFieldDeprecated.md)(array $field) : void
+    - protected [printAjaxFileBoxField_FileUploader](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printAjaxFileBoxField_FileUploader.md)(array $field) : void
     - protected [printTableListField](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printTableListField.md)(array $field) : void
-    - private [printAjaxFileBoxFieldWithAjaxFileUploadManager](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printAjaxFileBoxFieldWithAjaxFileUploadManager.md)(array $field) : void
 
 - Inherited methods
     - public HeliumRenderer::prepare(array $chloroform) : void
@@ -154,9 +153,8 @@ Methods
 - [HeliumLightRenderer::setContainer](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/setContainer.md) &ndash; Sets the container.
 - [HeliumLightRenderer::render](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/render.md) &ndash; Returns the html version of the passed chloroform array.
 - [HeliumLightRenderer::printField](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printField.md) &ndash; Prints the given field.
-- [HeliumLightRenderer::printAjaxFileBoxFieldDeprecated](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printAjaxFileBoxFieldDeprecated.md) &ndash; Prints an ajax file box field.
+- [HeliumLightRenderer::printAjaxFileBoxField_FileUploader](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printAjaxFileBoxField_FileUploader.md) &ndash; Prints an ajax file box field.
 - [HeliumLightRenderer::printTableListField](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printTableListField.md) &ndash; Prints a table list file box field.
-- [HeliumLightRenderer::printAjaxFileBoxFieldWithAjaxFileUploadManager](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/printAjaxFileBoxFieldWithAjaxFileUploadManager.md) &ndash; 
 - HeliumRenderer::prepare &ndash; Stores the chloroform array in memory.
 - HeliumRenderer::printFormContent &ndash; form tag itself.
 - HeliumRenderer::printFormTagOpening &ndash; Prints the opening form tag.
@@ -198,3 +196,6 @@ See the source code of [Ling\Chloroform_HeliumLightRenderer\HeliumLightRenderer]
 
 
 
+SeeAlso
+==============
+Previous class: [ChloroformHeliumLightRendererException](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/Exception/ChloroformHeliumLightRendererException.md)<br>

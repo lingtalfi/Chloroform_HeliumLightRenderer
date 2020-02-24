@@ -1,6 +1,6 @@
 Chloroform_HeliumLightRenderer
 ===========
-2019-10-21
+2019-10-21 -> 2020-02-24
 
 
 
@@ -46,6 +46,10 @@ Related
 History Log
 =============
 
+- 1.5.0 -- 2020-02-24
+
+    - add HeliumLightRenderer->printAjaxFileBoxField_FileUploader handler to handle jFileUploader script 
+    
 - 1.4.1 -- 2020-01-10
 
     - fix HeliumLightRenderer->printAjaxFileBoxFieldWithAjaxFileUploadManager not showing error messages because of the bootstrap class d-none 

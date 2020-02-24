@@ -1,6 +1,6 @@
 Ling/Chloroform_HeliumLightRenderer
 ================
-2019-10-21 --> 2020-01-10
+2019-10-21 --> 2020-02-24
 
 
 
@@ -8,6 +8,7 @@ Ling/Chloroform_HeliumLightRenderer
 Table of contents
 ===========
 
+- [ChloroformHeliumLightRendererException](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/Exception/ChloroformHeliumLightRendererException.md) &ndash; The ChloroformHeliumLightRendererException class.
 - [HeliumLightRenderer](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer.md) &ndash; The HeliumLightRenderer class.
     - [HeliumLightRenderer::__construct](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/__construct.md) &ndash; Builds the HeliumLightRenderer instance.
     - [HeliumLightRenderer::setContainer](https://github.com/lingtalfi/Chloroform_HeliumLightRenderer/blob/master/doc/api/Ling/Chloroform_HeliumLightRenderer/HeliumLightRenderer/setContainer.md) &ndash; Sets the container.
@@ -45,7 +46,6 @@ Dependencies
 - [Chloroform_HeliumRenderer](https://github.com/lingtalfi/Chloroform_HeliumRenderer)
 - [HtmlPageTools](https://github.com/lingtalfi/HtmlPageTools)
 - [Light](https://github.com/lingtalfi/Light)
-- [Light_AjaxFileUploadManager](https://github.com/lingtalfi/Light_AjaxFileUploadManager)
 - [Light_AjaxHandler](https://github.com/lingtalfi/Light_AjaxHandler)
 - [Light_CsrfSession](https://github.com/lingtalfi/Light_CsrfSession)
 - [JSortableLists](https://github.com/lingtalfi/JSortableLists)

@@ -3,12 +3,11 @@
 
 namespace Ling\Chloroform_HeliumLightRenderer;
 
-use Ling\Bat\CaseTool;
 use Ling\Bat\StringTool;
+use Ling\Chloroform_HeliumLightRenderer\Exception\ChloroformHeliumLightRendererException;
 use Ling\Chloroform_HeliumRenderer\HeliumRenderer;
 use Ling\HtmlPageTools\Copilot\HtmlPageCopilot;
 use Ling\Light\ServiceContainer\LightServiceContainerInterface;
-use Ling\Light_AjaxFileUploadManager\Util\LightAjaxFileUploadManagerRenderingUtil;
 use Ling\Light_AjaxHandler\Service\LightAjaxHandlerService;
 use Ling\Light_CsrfSession\Service\LightCsrfSessionService;
 
@@ -65,8 +64,6 @@ class HeliumLightRenderer extends HeliumRenderer
     }
 
 
-
-
     /**
      * @overrides
      */
@@ -76,30 +73,18 @@ class HeliumLightRenderer extends HeliumRenderer
         $className = $field['className'];
         switch ($className) {
             case "Ling\Chloroform\Field\AjaxFileBoxField":
+                /**
+                 * Since there can be many js clients to handle the AjaxFileBox, in this class we decide to use
+                 * the **type** property to decide which js client in particular we want to use.
+                 */
+                $type = $field['type'] ?? "fileUploader";
 
 
-                // todo: First, implement lud_user_options and lud_permission options... maxStorage=20M per profile...
-                // todo: Remember to finish User_Data and 2svp replacement...
-                // todo: Then
-                // todo: here, do the new way: dont upload until the user presses the submit button...
-                // todo: (and then update all files at once, in series, with upload progress...)
-                // todo: here, do the new way: dont upload until the user presses the submit button...
-                // todo: also implement a on(prepareFields) listener, (triggered by fafh--fullAjaxFormFileHelper), so that we can trigger the
-                // todo: uploading process only when the submit button is pressed...
-                // todo:
-                // todo: So basically, on submit, we convert only the files which are uploaded/dragged by the user,
-                // todo: and have not yet an (hidden) input bound to them. In other words, we don't touch the existing files (which have
-                // todo: an input bound to them).
-                // todo: When the conversion from js files to hidden input is done, then we use formData to post the form via ajax...
-                // todo:
-                // todo: so the fafh should probably provide a prepare method, so that the ajax uploader js helper get a chance
-                // todo: to do the conversion before the values are appended to FormData.
-                // todo:
-                // todo:
-                // todo:
-
-//                $this->printAjaxFileBoxField($field);
-                $this->printAjaxFileBoxFieldWithAjaxFileUploadManager($field);
+                if ('fileUploader' === $type) {
+                    $this->printAjaxFileBoxField_FileUploader($field);
+                } else {
+                    throw new ChloroformHeliumLightRendererException("Not implemented yet, ajaxFileBox with type $type");
+                }
                 break;
             case "Ling\Light_ChloroformExtension\Field\TableListField":
                 $this->printTableListField($field);
@@ -120,113 +105,123 @@ class HeliumLightRenderer extends HeliumRenderer
      * @param array $field
      * @throws \Exception
      */
-    protected function printAjaxFileBoxFieldDeprecated(array $field)
+    protected function printAjaxFileBoxField_FileUploader(array $field)
     {
+
+
+        $dialogZIndex = $field['dialogZIndex'] ?? 2000;
 
         /**
          * @var $copilot HtmlPageCopilot
          */
         $copilot = $this->container->get('html_page_copilot');
-        $copilot->registerLibrary("JFullAjaxForm", [
-            '/libs/universe/Ling/JFullAjaxForm/full-ajax-form-file-helper.js',
+
+        /**
+         * Assuming fontAwesome and jquery are already loaded with the bootstrap.
+         */
+        $copilot->registerLibrary("jqueryUi", [
+            'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js',
+        ], [
+            'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css',
+        ]);
+
+        $copilot->registerLibrary("JFileUploader", [
+            '/libs/universe/Ling/JFileUploader/fileuploader.js',
+            '/libs/universe/Ling/JFileUploader/lang/lang-eng.js',
+            '/libs/universe/Ling/JFileUploader/theme/theme-bootstrap.js',
+        ], [
+            '/libs/universe/Ling/JFileUploader/theme/theme-bootstrap.css',
+        ]);
+
+        $copilot->registerLibrary("cropperJs", [
+            '/libs/universe/Ling/jCropperJs/cropper.js',
+            '/libs/universe/Ling/jCropperJs/jquery-cropper.js',
+        ], [
+            '/libs/universe/Ling/jCropperJs/cropper.css',
+        ]);
+
+        $copilot->registerLibrary("select2", [
+            'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js',
+        ], [
+            'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css',
         ]);
 
 
-        $suffix = CaseTool::toDash($field['id']);
-        $sizeClass = $options['sizeClass'] ?? "w100";
-
-
         $cssId = $this->getCssIdById($field['id']);
-        $style = $this->options['formStyle'];
-        $hasHint = ('' !== (string)$field['hint']);
-        $hintId = $cssId . '-help';
-        $sClass = "";
-        if ($field['errors']) {
-            $sClass = "helium-is-invalid";
-        }
-
-
-        $fieldName = $field['id'];
-        $maxFile = $field["maxFile"];
-        $maxFile = 5;
-        if (null === $maxFile) {
-            $maxFile = -1;
-        }
-        $maxFileSize = $field["maxFileSize"];
-        if (null === $maxFileSize) {
-            $maxFileSize = -1;
-        }
-        $mimeType = $field["mimeType"];
-        $mimeType = json_encode($mimeType);
-        $postParams = json_encode($field['postParams']);
-        $fieldValue = json_encode($field['value']);
 
 
         ?>
+        <style type="text/css">
+            .ui-dialog {
+                z-index: <?php echo $dialogZIndex; ?> !important;
+            }
+        </style>
 
         <div class="field form-group">
-            <label for="id-fileuploader-input-<?php echo $suffix; ?>"><?php echo $field['label']; ?></label>
-            <div class="custom-file">
-                <input type="file" name="avatar_url[]" class="custom-file-input" id="id-fileuploader-input-<?php echo $suffix; ?>"
-                       value="<?php echo htmlspecialchars($field['value']); ?>"
-                    <?php echo $sClass; ?>
-                    <?php if (true === $hasHint): ?>
-                        aria-describedby="<?php echo $hintId; ?>"
-                    <?php endif; ?>
-                       multiple
-                >
-                <label class="custom-file-label"
-                       for="id-fileuploader-input-<?php echo $suffix; ?>">Choose file</label>
+            <?php $this->printFieldLabel($field); ?>
+            <div id="<?php echo $cssId; ?>" class="fileuploader-widget theme-bootstrap"></div>
 
-
-            </div>
-            <div class="file-uploader-dropzone mt-2" id="id-fileuploader-dropzone-<?php echo $suffix; ?>">Or drop file
-            </div>
-
-            <div id="id-fileuploader-progress-<?php echo $suffix; ?>"></div>
-            <div id="id-fileuploader-urltoform-<?php echo $suffix; ?>"></div>
-            <div id="id-fileuploader-filevisualizer-<?php echo $suffix; ?>"
-                 class="file-uploader-filevisualizer <?php echo htmlspecialchars($sizeClass); ?>"></div>
-
-            <div id="id-fileuploader-error-<?php echo $suffix; ?>" class="alert alert-danger mt-2"
-                 style="display: none"
-                 role="alert">
-                <strong>Oops!</strong> The following errors occurred:
-                <ul>
-                </ul>
-            </div>
 
             <?php $this->printErrorsAndHint($field); ?>
         </div>
 
-
         <script>
             document.addEventListener("DOMContentLoaded", function (event) {
+
+                var $ = jQuery;
+
                 $(document).ready(function () {
-                    $('#id-fileuploader-input-<?php echo $suffix; ?>').fullAjaxFormFileHelper({
-                        defaultValue: <?php echo $fieldValue; ?>,
-                        useErrorContainer: true,
-                        useFileVisualizer: true,
-                        fileVisualizerContainer: $('#id-fileuploader-filevisualizer-<?php echo $suffix; ?>'),
-                        //
-                        maxFileSize: <?php echo $maxFileSize; ?>,
-                        mimeType: <?php echo $mimeType; ?>,
 
-                        //
-                        maxFile: <?php echo $maxFile; ?>,
+                    var options = <?php echo json_encode($field); ?>;
 
-                        // deprecated
-                        useUrlToForm: false,
-                        urlToFormContainer: $('#id-fileuploader-urltoform-<?php echo $suffix; ?>'),
-                        urlToFormFieldName: "<?php echo $fieldName; ?>",
-                        //
-                        errorContainer: $("#id-fileuploader-error-<?php echo $suffix; ?>"),
-                        dropzone: $('#id-fileuploader-dropzone-<?php echo $suffix; ?>'),
+                    var fileUploader = new FileUploader($.extend(true, {}, {
+                        theme: "bootstrap",
+                        container: $("#<?php echo $cssId; ?>"),
+                        urls: [
+                            // "/plugins/Light_Kit_Admin/img/avatars/root_avatar.png",
+                            // "/img/cat.png",
+                            // "/user-data?id=f1581394664.3162-256",
+                        ],
+                        // name: "avatar_url",
+                        maxFile: 5,
+                        maxFileSize: -1,
+                        maxFileNameLength: 64,
+                        mimeType: null,
                         serverUrl: "/ajax_file_upload_manager",
-                        ajaxFormExtraFields: <?php echo $postParams; ?>,
-                        useProgressHandler: true,
-                        progressHandlerContainer: $('#id-fileuploader-progress-<?php echo $suffix; ?>')
-                    });
+                        uploadItemExtraFields: {
+                            // id: "lka_user_profile",
+                            // csrf_token: csrfToken,
+                        },
+                        immediateUpload: false,
+                        fileEditor: {
+                            useFileName: true,
+                            useCropper: true,
+                            usePrivacy: true,
+                            useTags: true,
+                            //
+                            allowCustomTags: true,
+                            fileName: null,
+                            // parentDir: "images",
+                            availableTags: [
+                                // "Maurice",
+                                // "Taekwondo",
+                            ],
+                            privacyDefaultValue: 0,
+                            originalDefaultValue: 0,
+                            originalFixedValue: 0, // 0 | 1 | null
+                            tagsMaxLength: 2,
+                        },
+                        themeOptions: {
+                            defaultView: "image",
+                            // defaultView: "text",
+                            showHiddenInput: false,
+
+                        },
+                        useFileEditor: true,
+                    }, options));
+                    fileUploader.init();
+
+
                 });
             });
         </script>
@@ -521,93 +516,5 @@ https://github.com/bassjobsen/Bootstrap-3-Typeahead/pull/125#issuecomment-115151
             <?php
 
         }
-    }
-
-
-    //--------------------------------------------
-    //
-    //--------------------------------------------
-
-    /**
-     *
-     * @param array $field
-     * @throws \Exception
-     * @deprecated in favor of printAjaxFileBoxField.
-     *
-     * Prints an ajax file box field.
-     *
-     * See the @page(Chloroform toArray) method for more info about the field structure.
-     *
-     */
-    private function printAjaxFileBoxFieldWithAjaxFileUploadManager(array $field)
-    {
-
-
-        $suffix = CaseTool::toDash($field['id']);
-        $sizeClass = $options['sizeClass'] ?? "w100";
-
-
-        $cssId = $this->getCssIdById($field['id']);
-        $style = $this->options['formStyle'];
-        $hasHint = ('' !== (string)$field['hint']);
-        $hintId = $cssId . '-help';
-        $sClass = "";
-        if ($field['errors']) {
-            $sClass = "helium-is-invalid";
-        }
-
-        $uploaderUtil = new LightAjaxFileUploadManagerRenderingUtil();
-        $uploaderUtil->setContainer($this->container);
-        $uploaderUtil->setSuffix($suffix);
-
-
-        ?>
-        <div class="field form-group">
-            <label for="id-fileuploader-input-<?php echo $suffix; ?>"><?php echo $field['label']; ?></label>
-            <div class="custom-file">
-                <input type="file" class="custom-file-input" id="id-fileuploader-input-<?php echo $suffix; ?>"
-                       value="<?php echo htmlspecialchars($field['value']); ?>"
-                    <?php echo $sClass; ?>
-                    <?php if (true === $hasHint): ?>
-                        aria-describedby="<?php echo $hintId; ?>"
-                    <?php endif; ?>
-                       multiple
-                >
-                <label class="custom-file-label"
-                       for="id-fileuploader-input-<?php echo $suffix; ?>">Choose file</label>
-
-
-            </div>
-            <div class="file-uploader-dropzone mt-2" id="id-fileuploader-dropzone-<?php echo $suffix; ?>">Or drop file
-            </div>
-
-            <div id="id-fileuploader-progress-<?php echo $suffix; ?>"></div>
-            <div id="id-fileuploader-urltoform-<?php echo $suffix; ?>"></div>
-            <div id="id-fileuploader-filevisualizer-<?php echo $suffix; ?>"
-                 class="file-uploader-filevisualizer <?php echo htmlspecialchars($sizeClass); ?>"></div>
-
-            <div id="id-fileuploader-error-<?php echo $suffix; ?>" class="alert alert-danger mt-2"
-                 style="display: none"
-                 role="alert">
-                <strong>Oops!</strong> The following errors occurred:
-                <ul>
-                </ul>
-            </div>
-
-            <?php $this->printErrorsAndHint($field); ?>
-        </div>
-
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function (event) {
-                $(document).ready(function () {
-                    <?php $uploaderUtil->printJavascript($field); ?>
-                });
-            });
-        </script>
-
-        <?php
-
-
     }
 }
