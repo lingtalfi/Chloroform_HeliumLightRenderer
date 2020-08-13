@@ -389,8 +389,8 @@ https://github.com/bassjobsen/Bootstrap-3-Typeahead/pull/125#issuecomment-115151
                                         url: '<?php echo $baseUrl; ?>',
                                         type: 'POST',
                                         data: {
-                                            ajax_handler_id: 'Light_ChloroformExtension',
-                                            ajax_action_id: 'table_list.autocomplete',
+                                            handler: 'Light_ChloroformExtension',
+                                            action: 'table_list.autocomplete',
                                             tableListIdentifier: '<?php echo $tableListIdentifier; ?>',
                                             csrf_token: '<?php echo $csrfToken; ?>',
                                             q: query,
