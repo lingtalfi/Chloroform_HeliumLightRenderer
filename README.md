@@ -1,6 +1,6 @@
 Chloroform_HeliumLightRenderer
 ===========
-2019-10-21 -> 2020-09-22
+2019-10-21 -> 2020-09-25
 
 
 
@@ -55,6 +55,10 @@ Related
 History Log
 =============
 
+- 1.6.2 -- 2020-09-25
+
+    - update api, is now compliant with new TableList features
+    
 - 1.6.1 -- 2020-09-22
 
     - update api, is now compliant with clever form initiative 

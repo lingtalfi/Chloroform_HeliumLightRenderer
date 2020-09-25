@@ -193,7 +193,6 @@ class HeliumLightRenderer extends HeliumRenderer
         $baseUrl = $service->getServiceUrl();
         $useAutoComplete = $field['useAutoComplete'] ?? false;
 
-
         if (false === $useAutoComplete) {
             $this->printSelectField($field);
         } else {
@@ -206,7 +205,7 @@ class HeliumLightRenderer extends HeliumRenderer
 
                 $mode = $field['mode'] ?? 'default';
                 $isMultiplier = ('multiplier' === $mode);
-                $tableListIdentifier = $field['tableListIdentifier'];
+                $tableListId = $field['tableListDirectiveId'] ?? $field['tableListIdentifier'];
 
                 /**
                  * @var $csrfService LightCsrfSessionService
@@ -236,7 +235,7 @@ class HeliumLightRenderer extends HeliumRenderer
                     "id" => $field['id'] . "_autocomplete_helper_",
                     "hint" => $field['hint'],
                     "errorName" => $field['errorName'],
-                    "value" => $field['autoCompleteLabel'] ?? '',
+                    "value" => $field['autoCompleteValueToLabels'] ?? '',
                     "htmlName" => '_autocomplete_helper_',
                     "errors" => [],
                     "className" => 'Ling\Chloroform\Field\StringField',
@@ -244,10 +243,20 @@ class HeliumLightRenderer extends HeliumRenderer
                     'icon' => 'fas fa-search',
                     'icon' => 'far fa-list-alt',
                     'icon_position' => 'pre',
+                    /**
+                     * Some say readonly is more reliable, but I don't like the dimmed design,
+                     * autocomplete off worked fine for me in chrome and firefox 2020-09-24
+                     * https://gist.github.com/niksumeiko/360164708c3b326bd1c8
+                     */
+                    'htmlAttributes' => [
+                        "autocomplete" => "off",
+                    ],
+
                 ];
 
+
                 $addBindingButtonId = '';
-                if ($isMultiplier && 'insert' === $formMode) {
+                if ($isMultiplier) {
                     $addBindingButtonId = StringTool::getUniqueCssId("tm-add-binding-btn-");
                     $fieldAutoComplete['button'] = '<button id="' . htmlspecialchars($addBindingButtonId) . '" class="add-binding-btn btn btn-outline-primary btn-sm"><i class="fas fa-plus"></i></button>';
                     $fieldAutoComplete['button_position'] = 'post';
@@ -346,12 +355,13 @@ class HeliumLightRenderer extends HeliumRenderer
                         $(document).ready(function () {
 
 
-                            var useMultiplier = <?php echo ('insert' === $formMode && true === $isMultiplier) ? 'true' : 'false'; ?>;
+                            var useMultiplier = <?php echo (true === $isMultiplier) ? 'true' : 'false'; ?>;
 
 
                             var errorFunc = function (errData) {
                                 window.Chloroform_HeliumLightRenderer_TableList_ErrorHandler(errData);
                             };
+
 
                             //----------------------------------------
                             // MULTIPLIER
@@ -363,6 +373,9 @@ class HeliumLightRenderer extends HeliumRenderer
                                     jBindingLabelInput: $('#<?php echo $fieldAutoCompleteId; ?>'),
                                     jBindingInput: $('#<?php echo $fieldId; ?>'),
                                     jItemsContainer: $('#<?php echo $tableMultiplierItemsId; ?>'),
+                                    <?php if(is_array($fieldAutoComplete['value'])): ?>
+                                    itemsContainerValues: <?php echo json_encode($fieldAutoComplete['value']); ?>,
+                                    <?php endif; ?>
                                 });
                                 tableListMultiplierHelper.listen();
                             }
@@ -395,7 +408,7 @@ class HeliumLightRenderer extends HeliumRenderer
                                             data: {
                                                 handler: 'Light_ChloroformExtension',
                                                 action: 'table_list.autocomplete',
-                                                tableListIdentifier: '<?php echo $tableListIdentifier; ?>',
+                                                tableListId: '<?php echo $tableListId; ?>',
                                                 csrf_token: '<?php echo $csrfToken; ?>',
                                                 q: query,
                                             },
