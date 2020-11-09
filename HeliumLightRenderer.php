@@ -77,6 +77,12 @@ class HeliumLightRenderer extends HeliumRenderer
                 /**
                  * Since there can be many js clients to handle the AjaxFileBox, in this class we decide to use
                  * the **type** property to decide which js client in particular we want to use.
+                 *
+                 * The following clients are available:
+                 *
+                 *
+                 * - fileuploader: [JFileUploader](https://github.com/lingtalfi/jFileUploader)
+                 *
                  */
                 $type = $field['type'] ?? "fileUploader";
 
@@ -90,6 +96,9 @@ class HeliumLightRenderer extends HeliumRenderer
             case "Ling\Light_ChloroformExtension\Field\TableListField":
                 $this->printTableListField($field);
                 break;
+            case "Ling\Light_CsrfSession\Chloroform\Field\LightCsrfSessionField":
+                $this->printCSRFField($field);
+                break;
             default:
                 return parent::printField($field);
                 break;
@@ -99,7 +108,7 @@ class HeliumLightRenderer extends HeliumRenderer
 
     /**
      *
-     * Prints an ajax file box field.
+     * Prints an ajax file box field to work with the [JFileUploader](https://github.com/lingtalfi/jFileUploader) client.
      *
      * See the @page(Chloroform toArray) method for more info about the field structure.
      *
@@ -108,6 +117,9 @@ class HeliumLightRenderer extends HeliumRenderer
      */
     protected function printAjaxFileBoxField_FileUploader(array $field)
     {
+
+
+
 
         /**
          * @var $copilot HtmlPageCopilot
@@ -147,6 +159,12 @@ class HeliumLightRenderer extends HeliumRenderer
         $cssContainerId = StringTool::getUniqueCssId('fileuploader-');
 
 
+
+        $gormanArray =  GormanJsonDecoder::encode($field, ['isExternalUrl']);
+
+
+
+
         ?>
 
 
@@ -158,7 +176,7 @@ class HeliumLightRenderer extends HeliumRenderer
 
         <script>
 
-            var options = <?php echo GormanJsonDecoder::decode($field); ?>;
+            var options = <?php echo GormanJsonDecoder::decode($gormanArray); ?>;
             document.addEventListener("DOMContentLoaded", function (event) {
                 new FileUploader({
                     target: document.getElementById("<?php echo $cssContainerId; ?>"),
@@ -198,7 +216,7 @@ class HeliumLightRenderer extends HeliumRenderer
         } else {
 
             ?>
-            <div class="cfi-control" data-cfi-id="<?php echo htmlspecialchars($field['id']); ?>">
+            <div class="cfi-control field" data-cfi-id="<?php echo htmlspecialchars($field['id']); ?>">
                 <?php
 
                 $formMode = $this->_chloroform['mode'];
@@ -256,7 +274,7 @@ class HeliumLightRenderer extends HeliumRenderer
 
 
                 $addBindingButtonId = '';
-                if ($isMultiplier) {
+                if (true === $isMultiplier) {
                     $addBindingButtonId = StringTool::getUniqueCssId("tm-add-binding-btn-");
                     $fieldAutoComplete['button'] = '<button id="' . htmlspecialchars($addBindingButtonId) . '" class="add-binding-btn btn btn-outline-primary btn-sm"><i class="fas fa-plus"></i></button>';
                     $fieldAutoComplete['button_position'] = 'post';
@@ -302,8 +320,15 @@ class HeliumLightRenderer extends HeliumRenderer
                 $fieldId = $field['id'];
                 $fieldAutoCompleteId = $fieldAutoComplete['id'];
 
+                if (false === $isMultiplier) {
+                    $fieldAutoComplete['value'] = array_shift($fieldAutoComplete['value']);
+                }
+
                 $this->printStringField($fieldAutoComplete);
-                $this->printHiddenField($field);
+
+                if (false === $isMultiplier) {
+                    $this->printHiddenField($field);
+                }
                 $tableMultiplierItemsId = StringTool::getUniqueCssId("table-multiplier-items-")
 
                 ?>

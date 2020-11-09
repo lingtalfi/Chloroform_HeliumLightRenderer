@@ -1,6 +1,6 @@
 Chloroform_HeliumLightRenderer
 ===========
-2019-10-21 -> 2020-09-25
+2019-10-21 -> 2020-11-09
 
 
 
@@ -55,6 +55,12 @@ Related
 History Log
 =============
 
+- 1.6.3 -- 2020-11-09
+
+    - update HeliumLightRenderer not rendering TableList properly
+    - now handle LightCsrfSessionField
+    - update HeliumLightRenderer->printField with AjaxFileBoxField, now handle gormanCallbackKeys property completely
+    
 - 1.6.2 -- 2020-09-25
 
     - update api, is now compliant with new TableList features
