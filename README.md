@@ -55,6 +55,10 @@ Related
 History Log
 =============
 
+- 1.6.5 -- 2020-11-20
+
+    - fix HeliumLightRenderer rendering multiplier widget in update mode
+    
 - 1.6.4 -- 2020-11-20
 
     - update HeliumLightRenderer to render newest TableListField api, fix js TableHelper inconsistencies with multiplier

@@ -218,10 +218,10 @@ class HeliumLightRenderer extends HeliumRenderer
                 <?php
 
 
-
                 $multiplier = $field['multiplier'] ?? false;
-
-
+                if ('update' === $this->_chloroform['mode']) {
+                    $multiplier = false;
+                }
 
 
                 $tableListId = $field['tableListDirectiveId'] ?? $field['tableListIdentifier'];
